@@ -233,12 +233,35 @@ func SendPSyncFullsync(br *bufio.Reader, bw *bufio.Writer) (string, int64, <-cha
 	return runid, offset, waitRdbDump(br)
 }
 
-func SendPSyncContinue(br *bufio.Reader, bw *bufio.Writer, runid string, offset int64, isReconn bool) (string, int64, <-chan int64) {
+func SendPSyncContinue(master string,br *bufio.Reader, bw *bufio.Writer, runid string, offset int64, isReconn bool) (string, int64, <-chan int64) {
 	if offset != -1 {
 		offset += 1
 	}
+	log.Infof("psync to %s",master)
+	var mapTemp map[string]string
+	mapTemp = make(map[string]string)
 
-	cmd := redis.NewCommand("psync", runid, offset)
+	if conf.Options.SelfDefinedPsync != "" {
+		hostPsyncs := strings.Split(conf.Options.SelfDefinedPsync, ";")
+		for i := 0; i < len(hostPsyncs); i++ {
+			hps := strings.Split(hostPsyncs[i],"#")
+			if len(hps) == 2 {
+				mapTemp[hps[0]] = hps[1]
+			}
+		}
+	}
+
+	runcmd,ok:= mapTemp[master]
+	if ok {
+		log.Infof("rum cmd is %s ",runcmd)
+	}else{
+		log.Infof("rum cmd is null ")
+		return "",-1,nil
+	}
+	log.Infof("rum cmd is %s ",runcmd)
+	// runcmd += "psync"
+
+	cmd := redis.NewCommand(runcmd, runid, offset)
 	if err := redis.Encode(bw, cmd, true); err != nil {
 		log.PanicError(err, "write psync command failed, continue")
 	}
