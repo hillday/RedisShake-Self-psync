@@ -87,6 +87,10 @@ type Configuration struct {
 	Version           string        // version
 	Type              string        // input mode -type=xxx
 	TargetDBMap       map[int]int   // target db map
+	
+	/*---------------------------------------------------------*/
+	// self defined variables
+	SelfDefinedPsync string `config:"self_defined_psync"`
 }
 
 var Options Configuration
