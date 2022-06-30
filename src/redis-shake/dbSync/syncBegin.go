@@ -48,7 +48,7 @@ func (ds *DbSyncer) sendPSyncCmd(master, authType, passwd string, tlsEnable bool
 
 	log.Infof("DbSyncer[%d] try to send 'psync' command: run-id[%v], offset[%v]", ds.id, runId, prevOffset)
 	// send psync command and decode the result
-	runid, offset, wait := utils.SendPSyncContinue(br, bw, runId, prevOffset, false)
+	runid, offset, wait := utils.SendPSyncContinue(master,br, bw, runId, prevOffset, false)
 	ds.stat.targetOffset.Set(offset)
 	ds.fullSyncOffset = offset // store the full sync offset
 
@@ -131,7 +131,7 @@ func (ds *DbSyncer) runIncrementalSync(c net.Conn, br *bufio.Reader, bw *bufio.W
 		utils.SendPSyncListeningPort(c, conf.Options.HttpProfile)
 		br = bufio.NewReaderSize(c, utils.ReaderBufferSize)
 		bw = bufio.NewWriterSize(c, utils.WriterBufferSize)
-		utils.SendPSyncContinue(br, bw, runId, offset, true)
+		utils.SendPSyncContinue(master,br, bw, runId, offset, true)
 	}
 }
 
