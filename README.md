@@ -1,6 +1,6 @@
 From [RedisShake](https://github.com/alibaba/RedisShake)
 # 自定义psync命令，用于elasticache redis
-添加配置项(参考bin/redis-shake.conf)：
+添加配置项(参考conf/redis-shake.conf)：
 > self_defined_psync = 127.0.0.1:7000#abcpsync;127.0.0.1:7001#psync;127.0.0.1:7002#psync
 
 RedisShake is mainly used to synchronize data from one redis to another.<br>
